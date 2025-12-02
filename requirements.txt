@@ -1,0 +1,4 @@
+# OTPi-frontend/requirements.txt
+fastapi
+uvicorn
+jinja2

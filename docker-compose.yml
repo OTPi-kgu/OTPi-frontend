@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  frontend:
+    # 🌟 수정 3: 현재 폴더(.)를 빌드 컨텍스트로 지정 🌟
+    build:
+      context: . # 현재 폴더(OTPi-frontend)를 빌드 컨텍스트로 지정
+      dockerfile: Dockerfile # 현재 폴더의 Dockerfile 사용
+    container_name: otpi_frontend
+    ports:
+      - "3000:80" 
