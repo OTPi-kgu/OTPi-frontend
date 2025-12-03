@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTPi 원타임 비밀번호 인증</title>
+    <!-- Tailwind CSS 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            /* 화면 가득 채우고 중앙 정렬 */
+            background-image: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+        } 
+        
+        /* 탭 버튼 스타일 */
+        .tab-active {
+            border: 2px solid #6366f1; /* indigo-500 테두리 */
+            background-color: #eef2ff; /* indigo-50 배경 */
+            color: #4338ca; /* indigo-700 */
+            font-weight: 700;
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .tab-inactive {
+            border: 1px solid #d1d5db; /* gray-300 테두리 */
+            color: #6b7280; /* 옅은 텍스트 */
+            background-color: #f9fafb; /* gray-50 배경 */
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+        
+        /* 새로운 주 버튼 스타일 (그라데이션 및 그림자) */
+        .primary-button {
+            transition: all 0.2s;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.5);
+        }
+        .primary-button:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.7);
+            transform: translateY(-1px);
+        }
+        
+        /* 입력 필드 기본 스타일 */
+        .form-input {
+            transition: all 0.15s;
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+        }
+
+        /* 폰트 크기 조정 */
+        #login-otp-code {
+            letter-spacing: 0.5rem; /* 간격 조정 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden transform transition duration-500 hover:shadow-indigo-300">
+        
+        <div class="p-6 border-b border-indigo-100">
+            <div class="flex items-center justify-center mb-3"> 
+                <svg class="w-7 h-7 text-indigo-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2v6a2 2 0 01-2 2h-6a2 2 0 01-2-2V9a2 2 0 012-2h6z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-2v-4h2m-2-4h2V6h-2" />
+                </svg>
+                <h1 class="text-2xl font-extrabold text-gray-900 text-center">OTPi One-Time Password</h1>
+            </div>
+            
+            <div id="message-box" role="alert" class="hidden p-3 rounded-xl text-sm text-center font-medium transition duration-300 mt-4 shadow-md"></div>
+            
+            <div class="flex justify-center mt-5 gap-2"> 
+                <button type="button" id="login-tab" onclick="showTab('login')" 
+                        class="flex-1 max-w-xs py-2 px-4 text-base tab-active transition duration-200 transform hover:scale-105">
+                    로그인
+                </button>
+                <button type="button" id="register-tab" onclick="showTab('register')" 
+                        class="flex-1 max-w-xs py-2 px-4 text-base tab-inactive transition duration-200 transform hover:scale-105">
+                    회원가입
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <!-- 로그인 폼 -->
+            <form id="login-form" class="space-y-5"> 
+                <div>
+                    <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">이메일 주소</label>
+                    <input type="email" id="login-email" name="email" required placeholder="example@email.com"
+                           class="form-input" autocomplete="email">
+                </div>
+
+                <button type="button" id="request-otp-button" 
+                        class="primary-button w-full text-white font-bold py-3 rounded-lg text-base">
+                    OTP 코드 요청 (로그인)
+                </button>
+
+                <div id="login-otp-section" class="hidden space-y-4 pt-4 border-t border-gray-100">
+                    <div>
+                        <!-- 요청 1: 유효 시간과 레이블을 같은 줄에 표시하기 위해 flex 사용 -->
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="login-otp-code" class="text-sm font-medium text-gray-700">
+                                OTP 인증 코드 (이메일 확인)
+                            </label>
+                            <div id="otp-countdown-display" 
+                                class="text-xs font-semibold text-green-600 px-2">
+                                <!-- 유효 시간 (JS에서 업데이트됨) -->
+                                00:00
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <!-- 요청 2: type="password"로 변경하여 입력 내용 마스킹 -->
+                            <input type="password" id="login-otp-code" name="code" required minlength="6" maxlength="6" 
+                                   placeholder="6자리 코드 입력" inputmode="numeric" pattern="[0-9]{6}"
+                                   class="form-input text-center text-xl font-bold">
+                            <!-- 카운트다운 디스플레이를 입력창 옆에서 위로 옮겼으므로 아래 요소는 삭제 -->
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="verify-otp-button"
+                            class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg text-base transition duration-150 shadow-md">
+                        인증 및 로그인
+                    </button>
+
+                    <button type="button" id="resend-otp-button" class="hidden w-full text-center text-sm text-indigo-500 hover:text-indigo-700 pt-2 transition duration-150">
+                        OTP 코드를 다시 요청합니다.
+                    </button>
+                </div>
+            </form>
+            
+            <!-- 회원가입 폼 -->
+            <form id="register-form" class="hidden space-y-5"> 
+                <div>
+                    <label for="register-name" class="block text-sm font-medium text-gray-700 mb-1">이름</label>
+                    <input type="text" id="register-name" name="name" required placeholder="홍길동"
+                           class="form-input">
+                </div>
+                <div>
+                    <label for="register-email" class="block text-sm font-medium text-gray-700 mb-1">이메일 주소</label>
+                    <input type="email" id="register-email" name="email" required placeholder="example@email.com"
+                           class="form-input" autocomplete="email">
+                </div>
+                <button type="submit" 
+                        class="primary-button w-full text-white font-bold py-3 rounded-lg text-base">
+                    회원가입 및 OTP 요청
+                </button>
+            </form>
+
+            <!-- 대시보드 (로그인 성공 시) -->
+            <div id="dashboard" class="hidden text-center p-6 bg-indigo-50 rounded-2xl shadow-inner border border-indigo-200">
+                
+                <div class="mb-4">
+                    <svg class="w-20 h-20 text-indigo-600 mx-auto animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.56 0 5.013.88 6.879 2.196M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 1114 0H5z" />
+                    </svg>
+                </div>
+                
+                <h2 class="text-2xl font-extrabold text-gray-800">로그인 성공!</h2> 
+                <p class="text-lg text-gray-600 mt-2">
+                    환영합니다, 
+                    <a href="javascript:void(0);" onclick="fetchUserInfo()" 
+                    id="dashboard-user-name-link" 
+                    class="font-extrabold text-indigo-600 hover:text-indigo-800 cursor-pointer transition duration-150 underline">
+                        <span id="dashboard-user-name"></span></a>님.
+                </p>
+                <p class="text-sm text-gray-500 mt-1">이 곳은 안전하게 인증된 사용자만 접근할 수 있는 페이지입니다.</p>
+
+                <!-- 로그아웃 버튼 수정: 아이콘을 더 자연스러운 것으로 변경하고, fill 대신 stroke 사용 -->
+                <button id="logout-button" 
+                                class="mt-6 w-full max-w-xs mx-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-6 rounded-lg transition duration-150 shadow-lg hover:shadow-xl flex items-center justify-center text-base"> 
+                    <svg class="w-5 h-5 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    로그아웃
+                </button>
+            </div>
+
+            <div class="mt-4 text-center text-xs text-gray-400 border-t pt-3"> 
+                © 2025 OTPi Security System. All rights reserved.
+            </div>
+        </div>
+    </div>
+    
+    <!-- app.js는 변경 사항이 없으므로 기존 파일을 그대로 사용합니다. -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

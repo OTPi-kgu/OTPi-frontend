@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* 데이터 행 스타일 개선: 오른쪽 정렬 및 수직 중앙 정렬 */
+        .data-row { 
+            display: grid; 
+            grid-template-columns: 1fr 2fr; 
+            gap: 1rem; 
+            padding: 1rem 0; 
+            border-bottom: 1px solid #e5e7eb; 
+            align-items: center; 
+        }
+        .data-label { 
+            font-weight: 600; 
+            color: #4b5563; 
+            text-align: right; 
+            padding-right: 1rem;
+        }
+        .data-value { 
+            color: #1f2937; 
+            word-break: break-all;
+            font-weight: 500;
+        }
+        .data-row:last-child {
+            border-bottom: none;
+        }
+        
+        /* 주 버튼 스타일 통일 */
+        .primary-button {
+            transition: all 0.2s;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); 
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.5);
+        }
+        .primary-button:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.7);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-indigo-50 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-white rounded-3xl shadow-2xl overflow-hidden p-8 transform transition duration-500 hover:shadow-indigo-300">
+        
+        <div class="flex items-center justify-center mb-6 border-b pb-4 border-indigo-100">
+            <svg class="w-8 h-8 text-indigo-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <h1 class="text-3xl font-extrabold text-gray-900 text-center">
+                {{ user.name }}님의 회원 정보
+            </h1>
+        </div>
+        
+        <div class="space-y-6">
+            <div class="border border-indigo-200 rounded-xl p-6 bg-indigo-50 shadow-inner">
+                <div class="data-row">
+                    <span class="data-label">이름</span>
+                    <span class="data-value font-bold text-indigo-700">{{ user.name }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">이메일</span>
+                    <span class="data-value">{{ user.email }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">회원 ID</span>
+                    <span class="data-value text-gray-500 text-sm">{{ user.id }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">등록일 (KST)</span>
+                    <span class="data-value">{{ user.created_at_kst }}</span>
+                </div>
+                <div class="data-row border-b-0">
+                    <span class="data-label">마지막 로그인 (KST)</span>
+                    <span class="data-value text-green-600 font-semibold">{{ user.last_login_at_kst or '없음' }}</span>
+                </div>
+            </div>
+
+            <a href="/" class="primary-button block w-full text-center text-white p-3 rounded-lg font-bold text-lg">
+                <span class="flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    홈으로 돌아가기
+                </span>
+            </a>
+            
+            <div class="mt-6 text-center text-xs text-gray-400 border-t pt-4">
+                © 2024 OTPi Security System. All rights reserved.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+
+        /* 주 버튼 스타일 통일 */
+        .primary-button {
+            transition: all 0.2s;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); /* Indigo-500 to Purple-500 */
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.5);
+        }
+        .primary-button:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.7);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-indigo-50 flex flex-col items-center justify-center min-h-screen p-4 text-center">
+    <div class="bg-white p-10 rounded-3xl shadow-2xl space-y-6 max-w-md w-full border border-indigo-100 transform transition duration-500 hover:shadow-indigo-300">
+        
+        <div class="mb-4">
+            <svg class="w-12 h-12 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v3h8z" />
+            </svg>
+        </div>
+        
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-2">{{ message }}</h1>
+        <p class="text-gray-600 leading-relaxed">이것은 **Python FastAPI**와 **Docker Compose**로 구동되는 <br class="sm:hidden">OTPi 프런트엔드 컨테이너의 시작 페이지입니다.</p>
+        
+        <p class="text-indigo-600 font-bold mt-6 text-lg border-t pt-4">로그인 및 앱 기능은 아래 버튼을 이용해 확인하세요.</p>
+        
+        <a href="/home" class="primary-button inline-block px-8 py-3 text-white font-bold rounded-lg text-lg">
+            <span class="flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                OTPi 메인 페이지로 이동
+            </span>
+        </a>
+
+        <div class="mt-8 text-center text-xs text-gray-400 border-t pt-4">
+            Powered by FastAPI & Tailwind CSS | © 2025 OTPi.
+        </div>
+    </div>
+</body>
+</html>

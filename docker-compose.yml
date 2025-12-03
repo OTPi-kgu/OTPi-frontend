@@ -1,11 +1,13 @@
-version: "3.9"
-
 services:
-  frontend:
-    # 🌟 수정 3: 현재 폴더(.)를 빌드 컨텍스트로 지정 🌟
-    build:
-      context: . # 현재 폴더(OTPi-frontend)를 빌드 컨텍스트로 지정
-      dockerfile: Dockerfile # 현재 폴더의 Dockerfile 사용
+  otpi_frontend: # 🌟 서비스 이름을 일관성 있게 'otpi_frontend'로 변경
+    build: .
     container_name: otpi_frontend
     ports:
-      - "3000:80" 
+      - "3000:80"
+    networks:
+      - otpi_network # 🌟 공통 네트워크 연결
+
+networks:
+  otpi_network: # 🌟 외부 네트워크를 사용하도록 선언
+    name: otpi_common_network # 백엔드에서 정의한 네트워크 이름과 일치
+    external: true # 이 네트워크는 외부에 이미 생성되어 있음을 명시
